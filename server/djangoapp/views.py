@@ -32,13 +32,31 @@ def login_user(request):
     return JsonResponse(data)
 
 # Create a `logout_request` view to handle sign out request
-# def logout_request(request):
-# ...
+@csrf_exempt
+def logout_request(request):
+    # El método logout limpia por completo la sesión del usuario actual
+    logout(request)
+    # Obtenemos el nombre de usuario que estaba activo para enviarlo en la respuesta
+    username = request.user.username
+    data = {"userName": username, "status": "Logged Out"}
+    return JsonResponse(data)
 
 # Create a `registration` view to handle sign up request
-# @csrf_exempt
-# def registration(request):
-# ...
+@csrf_exempt
+def registration(request):
+    data = json.loads(request.body)
+    username = data['userName']
+    password = data['password']
+    first_name = data['firstName']
+    last_name = data['lastName']
+    email = data['email']
+    try:
+        User.objects.get(username=username)
+        return JsonResponse({"userName": username, "error": "Already Registered"})
+    except:
+        user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password, email=email)
+        login(request, user)
+        return JsonResponse({"userName": username, "status": "Authenticated"})
 
 # Update the `get_dealerships` view to render list of dealerships all by default, particular state if state is passed
 def get_dealerships(request, state="All"):
