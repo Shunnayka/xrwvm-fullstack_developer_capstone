@@ -8,6 +8,7 @@ from datetime import datetime
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
+from .models import CarMake, CarModel # ➕ Importamos tus modelos de autos locales
 from .restapis import get_request, analyze_review_sentiments, post_review
 
 # Get an instance of a logger
@@ -82,10 +83,23 @@ def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
         reviews = get_request(endpoint)
+        
+        # Validación de seguridad por si 'reviews' viene vacío o con errores
+        if reviews is None:
+            reviews = []
+            
         for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
+            try:
+                response = analyze_review_sentiments(review_detail['review'])
+                # Verificamos que la respuesta del analizador sea válida antes de leerla
+                if response is not None and 'sentiment' in response:
+                    review_detail['sentiment'] = response['sentiment']
+                else:
+                    review_detail['sentiment'] = "neutral"
+            except Exception as e:
+                logger.error(f"Error analyzing sentiment: {e}")
+                review_detail['sentiment'] = "neutral"
+                
         return JsonResponse({"status":200,"reviews":reviews})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
@@ -100,3 +114,16 @@ def add_review(request):
             return JsonResponse({"status":401,"message":"Error in posting review"})
     else:
         return JsonResponse({"status":403,"message":"Unauthorized"})
+
+
+# Función alineada con las mayúsculas estrictas de PostReview.jsx
+def get_cars(request):
+    cars = [
+        {"CarMake": "Toyota", "CarModel": "Camry"},
+        {"CarMake": "Honda", "CarModel": "Civic"},
+        {"CarMake": "Toyota", "CarModel": "Corolla"},
+        {"CarMake": "Honda", "CarModel": "Accord"}
+    ]
+    return JsonResponse({"CarModels": cars})
+
+

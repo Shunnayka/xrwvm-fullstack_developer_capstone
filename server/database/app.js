@@ -37,14 +37,15 @@ app.get('/', async (req, res) => {
 });
 
 // Express route to fetch all reviews
-app.get('/fetchReviews', async (req, res) => {
-  try {
-    const documents = await Reviews.find();
-    res.json(documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching documents' });
-  }
-});
+// Reemplaza este bloque exacto en tu app.js:
+app.get('/fetchReviews/dealer/:id', async (req, res) => {
+    try {
+      const documents = await Reviews.find({ dealership: Number(req.params.id) });
+      res.json(documents);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching documents' });
+    }
+  });  
 
 // Express route to fetch reviews by a particular dealer
 app.get('/fetchReviews/dealer/:id', async (req, res) => {

@@ -11,13 +11,11 @@ const Dealers = () => {
   const dealer_url = "/djangoapp/get_dealers/";
 
   const filterDealers = async (state) => {
-    // Si selecciona "All", traemos todos de nuevo
     if (state === "All") {
       get_dealers();
       return;
     }
     
-    // Corregido: se construye la URL correctamente usando la barra inclinada
     const dealer_url_by_state = `/djangoapp/get_dealers/${state}`;
     const res = await fetch(dealer_url_by_state, {
       method: "GET"
