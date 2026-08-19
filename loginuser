@@ -1,0 +1,5 @@
+curl -X POST "https://cognitiveclass.ai" \
+  -H "Content-Type: application/json" \
+  -d '{"userName": "nueva_shunnayka", "password": "Password12@"}'
+
+{"userName": "nueva_shunnayka", "status": "Authenticated"}
