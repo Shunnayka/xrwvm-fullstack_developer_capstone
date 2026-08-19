@@ -1,5 +1,5 @@
-curl -X POST "https://cognitiveclass.ai" \
+curl -X POST "http://localhost:8000/djangoapp/login" \
   -H "Content-Type: application/json" \
   -d '{"userName": "nueva_shunnayka", "password": "Password12@"}'
 
-{"userName": "nueva_shunnayka", "status": "Authenticated"}
+{"userName": "nueva_shunnayka"}
